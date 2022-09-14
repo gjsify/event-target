@@ -1,9 +1,9 @@
-import { Event } from "./event"
+import { Event } from "./event.js"
 import {
     getEventAttributeValue,
     setEventAttributeValue,
-} from "./event-attribute-handler"
-import { EventTarget } from "./event-target"
+} from "./event-attribute-handler.js"
+import { EventTarget } from "./event-target.js"
 
 /**
  * Define an `EventTarget` class that has event attibutes.

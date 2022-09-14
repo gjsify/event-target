@@ -1,7 +1,7 @@
-import { createInvalidStateError } from "./dom-exception"
-import { Event, getEventInternalData } from "./event"
-import { EventWrapper } from "./event-wrapper"
-import { Global } from "./global"
+import { createInvalidStateError } from "./dom-exception.js"
+import { Event, getEventInternalData } from "./event.js"
+import { EventWrapper } from "./event-wrapper.js"
+import { Global } from "./global.js"
 import {
     invokeCallback,
     isCapture,
@@ -9,24 +9,24 @@ import {
     isPassive,
     isRemoved,
     Listener,
-} from "./listener"
+} from "./listener.js"
 import {
     addListener,
     findIndexOfListener,
     removeListener,
     removeListenerAt,
-} from "./listener-list"
+} from "./listener-list.js"
 import {
     createListenerListMap,
     ensureListenerList,
     ListenerListMap,
-} from "./listener-list-map"
-import { assertType, format } from "./misc"
+} from "./listener-list-map.js"
+import { assertType, format } from "./misc.js"
 import {
     EventListenerWasDuplicated,
     InvalidEventListener,
     OptionWasIgnored,
-} from "./warnings"
+} from "./warnings.js"
 
 /**
  * An implementation of the `EventTarget` interface.

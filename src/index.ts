@@ -1,12 +1,12 @@
-import { setErrorHandler } from "./lib/error-handler"
-import { Event } from "./lib/event"
+import { setErrorHandler } from "./error-handler.js"
+import { Event } from "./event.js"
 import {
     getEventAttributeValue,
     setEventAttributeValue,
-} from "./lib/event-attribute-handler"
-import { EventTarget } from "./lib/event-target"
-import { defineCustomEventTarget, defineEventAttribute } from "./lib/legacy"
-import { setWarningHandler } from "./lib/warning-handler"
+} from "./event-attribute-handler.js"
+import { EventTarget } from "./event-target.js"
+import { defineCustomEventTarget, defineEventAttribute } from "./legacy.js"
+import { setWarningHandler } from "./warning-handler.js"
 
 export default EventTarget
 export {

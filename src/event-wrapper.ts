@@ -1,6 +1,6 @@
-import { Event } from "./event"
-import { Global } from "./global"
-import { assertType } from "./misc"
+import { Event } from "./event.js"
+import { Global } from "./global.js"
+import { assertType } from "./misc.js"
 
 /**
  * An implementation of `Event` interface, that wraps a given event object.
@@ -51,6 +51,7 @@ export class EventWrapper<TEventType extends string> extends Event<TEventType> {
 
         const { original } = $(this)
         if ("stopPropagation" in original) {
+            // eslint-disable-next-line @mysticatea/ts/no-unnecessary-type-assertion
             original.stopPropagation!()
         }
     }
@@ -72,6 +73,7 @@ export class EventWrapper<TEventType extends string> extends Event<TEventType> {
 
         const { original } = $(this)
         if ("stopImmediatePropagation" in original) {
+            // eslint-disable-next-line @mysticatea/ts/no-unnecessary-type-assertion
             original.stopImmediatePropagation!()
         }
     }
@@ -93,6 +95,7 @@ export class EventWrapper<TEventType extends string> extends Event<TEventType> {
 
         const { original } = $(this)
         if ("preventDefault" in original) {
+            // eslint-disable-next-line @mysticatea/ts/no-unnecessary-type-assertion
             original.preventDefault!()
         }
     }
@@ -100,6 +103,7 @@ export class EventWrapper<TEventType extends string> extends Event<TEventType> {
     get timeStamp(): number {
         const { original } = $(this)
         if ("timeStamp" in original) {
+            // eslint-disable-next-line @mysticatea/ts/no-unnecessary-type-assertion
             return original.timeStamp!
         }
         return super.timeStamp

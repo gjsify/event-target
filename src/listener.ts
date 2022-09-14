@@ -1,6 +1,6 @@
-import { reportError } from "./error-handler"
-import { Event } from "./event" // Used as only type, so no circular.
-import { EventTarget } from "./event-target" // Used as only type, so no circular.
+import { reportError } from "./error-handler.js"
+import { Event } from "./event.js" // Used as only type, so no circular.
+import { EventTarget } from "./event-target.js" // Used as only type, so no circular.
 
 /**
  * The event listener concept.

@@ -1,4 +1,4 @@
-import { createListener, isCapture, Listener, setRemoved } from "./listener"
+import { createListener, isCapture, Listener, setRemoved } from "./listener.js"
 
 /**
  * Information of an listener list.

@@ -1,4 +1,4 @@
-import { Global } from "./global"
+import { Global } from "./global.js"
 
 /**
  * Create a new InvalidStateError instance.

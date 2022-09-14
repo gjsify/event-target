@@ -1,3 +1,12 @@
+# @gjsify/event-target
+
+An implementation of WHATWG EventTarget interface for Gjs forked from [mysticatea/event-target-shim](https://github.com/mysticatea/event-target-shim).
+
+## TODO
+
+* Port more tests
+
+# Original Readme
 # event-target-shim
 
 [![npm version](https://img.shields.io/npm/v/event-target-shim.svg)](https://www.npmjs.com/package/event-target-shim)

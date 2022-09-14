@@ -1,4 +1,4 @@
-import { ListenerList } from "./listener-list"
+import { ListenerList } from "./listener-list.js"
 
 /**
  * The map from event types to each listener list.

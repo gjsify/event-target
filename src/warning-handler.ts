@@ -1,4 +1,4 @@
-import { assertType } from "./misc"
+import { assertType } from "./misc.js"
 
 declare const console: any
 

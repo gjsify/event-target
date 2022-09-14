@@ -1,4 +1,4 @@
-import { anyToString, assertType } from "./misc"
+import { anyToString, assertType } from "./misc.js"
 
 declare const console: any
 declare const dispatchEvent: any

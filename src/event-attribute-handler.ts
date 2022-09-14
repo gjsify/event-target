@@ -1,8 +1,8 @@
-import { Event } from "./event"
-import { EventTarget, getEventTargetInternalData } from "./event-target"
-import { addListener, ListenerList, removeListener } from "./listener-list"
-import { ensureListenerList } from "./listener-list-map"
-import { InvalidAttributeHandler } from "./warnings"
+import { Event } from "./event.js"
+import { EventTarget, getEventTargetInternalData } from "./event-target.js"
+import { addListener, ListenerList, removeListener } from "./listener-list.js"
+import { ensureListenerList } from "./listener-list-map.js"
+import { InvalidAttributeHandler } from "./warnings.js"
 
 /**
  * Get the current value of a given event attribute.

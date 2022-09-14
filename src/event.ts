@@ -1,13 +1,13 @@
-import { EventTarget } from "./event-target" // Used as only type, so no circular.
-import { Global } from "./global"
-import { assertType } from "./misc"
+import { EventTarget } from "./event-target.js" // Used as only type, so no circular.
+import { Global } from "./global.js"
+import { assertType } from "./misc.js"
 import {
     CanceledInPassiveListener,
     FalsyWasAssignedToCancelBubble,
     InitEventWasCalledWhileDispatching,
     NonCancelableEventWasCanceled,
     TruthyWasAssignedToReturnValue,
-} from "./warnings"
+} from "./warnings.js"
 
 /*eslint-disable class-methods-use-this */
 
