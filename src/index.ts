@@ -1,5 +1,6 @@
 import { setErrorHandler } from "./error-handler.js"
 import { Event } from "./event.js"
+import { CustomEvent } from "./custom-event.js"
 import {
     getEventAttributeValue,
     setEventAttributeValue,
@@ -13,6 +14,7 @@ export {
     defineCustomEventTarget,
     defineEventAttribute,
     Event,
+    CustomEvent,
     EventTarget,
     getEventAttributeValue,
     setErrorHandler,

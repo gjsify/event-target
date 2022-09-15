@@ -2,10 +2,6 @@
 
 An implementation of WHATWG EventTarget interface for Gjs forked from [mysticatea/event-target-shim](https://github.com/mysticatea/event-target-shim).
 
-## TODO
-
-* Port more tests
-
 # Original Readme
 # event-target-shim
 
@@ -24,13 +20,13 @@ This implementation is designed ...
 
 **Native Support Information:**
 
-| Feature                   | IE  | Edge | Firefox | Chrome | Safari | Node.js |
-| :------------------------ | :-- | :--- | :------ | :----- | :----- | :------ |
-| `Event` constructor       | ❌  | 12   | 11      | 15     | 6      | 15.4.0  |
-| `EventTarget` constructor | ❌  | 87   | 84      | 87     | 14     | 15.4.0  |
-| `passive` option          | ❌  | 16   | 49      | 51     | 10     | 15.4.0  |
-| `once` option             | ❌  | 16   | 50      | 55     | 10     | 15.4.0  |
-| `signal` option           | ❌  | ❌   | ❌      | ❌     | ❌     | ❌      |
+| Feature                   | IE  | Edge | Firefox | Chrome | Safari | Node.js | Gjs     |
+| :------------------------ | :-- | :--- | :------ | :----- | :----- | :------ | :------ |
+| `Event` constructor       | ❌  | 12   | 11      | 15     | 6      | 15.4.0  | ❌      |
+| `EventTarget` constructor | ❌  | 87   | 84      | 87     | 14     | 15.4.0  | ❌      |
+| `passive` option          | ❌  | 16   | 49      | 51     | 10     | 15.4.0  | ❌      |
+| `once` option             | ❌  | 16   | 50      | 55     | 10     | 15.4.0  | ❌      |
+| `signal` option           | ❌  | ❌   | ❌      | ❌     | ❌     | ❌      | ❌      |
 
 ---
 

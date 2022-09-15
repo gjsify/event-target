@@ -49,5 +49,8 @@
   "homepage": "https://github.com/mysticatea/event-target-shim",
   "funding": "https://github.com/sponsors/mysticatea",
   "sideEffects": false,
-  "unpkg": "umd.js"
+  "unpkg": "umd.js",
+  "dependencies": {
+    "@gjsify/utils": "workspace:^"
+  }
 }
