@@ -1,4 +1,4 @@
-import { describe, it, expect, assert } from '@gjsify/unit';
+import { describe, it, expect, assert, beforeEach, afterEach } from '@gjsify/unit';
 
 import {
     FalsyWasAssignedToCancelBubble,
@@ -17,7 +17,7 @@ const NativeEvent = globalThis.Event;
 
 // Credits https://github.com/mysticatea/event-target-shim/blob/master/test/event.ts
 
-export const eventTestSuite = async () => {
+export default async () => {
 
 	await describe("Event.constructor", async () => {
 
@@ -86,7 +86,7 @@ export const eventTestSuite = async () => {
 			const event = new Event("foo")
 			let ok = false
 
-			target.addEventListener("foo", async () => {
+			target.addEventListener("foo", () => {
 				expect(event.target).toBe(target);
 				ok = true
 			})
@@ -116,7 +116,7 @@ export const eventTestSuite = async () => {
 			const event = new Event("foo")
 			let ok = false
 
-			target.addEventListener("foo", async () => {
+			target.addEventListener("foo", () => {
 				assert.strictEqual(event.srcElement, target)
 				ok = true
 			})
@@ -146,7 +146,7 @@ export const eventTestSuite = async () => {
 			const event = new Event("foo")
 			let ok = false
 
-			target.addEventListener("foo", async () => {
+			target.addEventListener("foo", () => {
 				assert.strictEqual(event.currentTarget, target)
 				ok = true
 			})
@@ -168,7 +168,7 @@ export const eventTestSuite = async () => {
 			const event = new Event("foo")
 			let ok = false
 
-			target.addEventListener("foo", async () => {
+			target.addEventListener("foo", () => {
 				assert.deepStrictEqual(event.composedPath(), [target])
 				ok = true
 			})
@@ -330,7 +330,15 @@ export const eventTestSuite = async () => {
 
 	await describe("Event.cancelBubble property", async () => {
 
-		const { assertWarning } = setupErrorCheck()
+        const { assertWarning, beforeEachCb, afterEachCb } = setupErrorCheck()
+
+        beforeEach(async () => {
+            beforeEachCb();
+        })
+
+        afterEach(async () => {
+            afterEachCb();
+        })
 
 		await it("should be false", async () => {
 			const event = new Event("foo")
@@ -439,7 +447,15 @@ export const eventTestSuite = async () => {
 
 	await describe("Event.returnValue property", async () => {
 
-		const { assertWarning } = setupErrorCheck()
+        const { assertWarning, beforeEachCb, afterEachCb } = setupErrorCheck()
+
+        beforeEach(async () => {
+            beforeEachCb();
+        })
+
+        afterEach(async () => {
+            afterEachCb();
+        })
 
 		await it("should be true", async () => {
 			const event = new Event("foo")
@@ -491,7 +507,15 @@ export const eventTestSuite = async () => {
 
 	await describe("Event.preventDefault method", async () => {
 
-		const { assertWarning } = setupErrorCheck()
+        const { assertWarning, beforeEachCb, afterEachCb } = setupErrorCheck()
+
+        beforeEach(async () => {
+            beforeEachCb();
+        })
+
+        afterEach(async () => {
+            afterEachCb();
+        })
 
 		await it("should return undefined", async () => {
 			const event = new Event("foo", { cancelable: true })
@@ -507,7 +531,15 @@ export const eventTestSuite = async () => {
 
 	await describe("Event.defaultPrevented property", async () => {
 
-		const { assertWarning } = setupErrorCheck()
+        const { assertWarning, beforeEachCb, afterEachCb } = setupErrorCheck()
+
+        beforeEach(async () => {
+            beforeEachCb();
+        })
+
+        afterEach(async () => {
+            afterEachCb();
+        })
 
 		await it("should be false", async () => {
 			const event = new Event("foo")
@@ -611,7 +643,15 @@ export const eventTestSuite = async () => {
 
 	await describe("Event.initEvent method", async () => {
 
-		const { assertWarning } = setupErrorCheck()
+        const { assertWarning, beforeEachCb, afterEachCb } = setupErrorCheck()
+
+        beforeEach(async () => {
+            beforeEachCb();
+        })
+
+        afterEach(async () => {
+            afterEachCb();
+        })
 
 		await it("should return undefined", async () => {
 			const event = new Event("foo")
@@ -679,7 +719,7 @@ export const eventTestSuite = async () => {
 			const target = new EventTarget()
 			const event = new Event("foo")
 
-			target.addEventListener("foo", async () => {
+			target.addEventListener("foo", () => {
 				event.initEvent("bar")
 			})
 			target.dispatchEvent(event)

@@ -1,25 +1,30 @@
-import { spy } from "@mysticatea/spy"
-import assert from "assert"
+import { describe, it, assert, spy, beforeEach, afterEach } from '@gjsify/unit';
+
 import {
     Event,
     EventTarget,
     getEventAttributeValue,
     setEventAttributeValue,
-} from "../src/index"
-import { InvalidAttributeHandler } from "../src/lib/warnings"
-import { countEventListeners } from "./lib/count-event-listeners"
-import { setupErrorCheck } from "./lib/setup-error-check"
+} from "./index.js"
+import { InvalidAttributeHandler } from "./warnings.js"
+import { countEventListeners } from "./test/count-event-listeners.js"
+import { setupErrorCheck } from "./test/setup-error-check.js"
 
-describe("Event attribute handlers", () => {
-    const { assertWarning } = setupErrorCheck()
+export default async () => {
+    await describe("Event attribute handlers 'getEventAttributeValue' function", async () => {
+        let target: EventTarget;
+        const { assertWarning, beforeEachCb, afterEachCb } = setupErrorCheck();
 
-    let target: EventTarget
-    beforeEach(() => {
-        target = new EventTarget()
-    })
+        beforeEach(async () => {
+            beforeEachCb();
+            target = new EventTarget();
+        })
 
-    describe("'getEventAttributeValue' function", () => {
-        it("should throw a TypeError if non-EventTarget object is present", () => {
+        afterEach(async () => {
+            afterEachCb();
+        })
+
+        await it("should throw a TypeError if non-EventTarget object is present", async () => {
             assert.throws(() => {
                 // @ts-expect-error
                 getEventAttributeValue()
@@ -34,28 +39,28 @@ describe("Event attribute handlers", () => {
             }, TypeError)
         })
 
-        it("should return null if any handlers are not set.", () => {
+        await it("should return null if any handlers are not set.", async () => {
             assert.strictEqual(getEventAttributeValue(target, "foo"), null)
         })
 
-        it("should return null if any handlers are not set, even if listeners are added by 'addEventListener'.", () => {
+        await it("should return null if any handlers are not set, even if listeners are added by 'addEventListener'.", async () => {
             target.addEventListener("foo", () => {})
             assert.strictEqual(getEventAttributeValue(target, "foo"), null)
         })
 
-        it("should return null if listeners are set to a different event by 'setEventAttributeValue'.", () => {
+        await it("should return null if listeners are set to a different event by 'setEventAttributeValue'.", async () => {
             const f = () => {}
             setEventAttributeValue(target, "bar", f)
             assert.strictEqual(getEventAttributeValue(target, "foo"), null)
         })
 
-        it("should return the set function if listeners are set by 'setEventAttributeValue'.", () => {
+        await it("should return the set function if listeners are set by 'setEventAttributeValue'.", async () => {
             const f = () => {}
             setEventAttributeValue(target, "foo", f)
             assert.strictEqual(getEventAttributeValue(target, "foo"), f)
         })
 
-        it("should return the set object if listeners are set by 'setEventAttributeValue'.", () => {
+        await it("should return the set object if listeners are set by 'setEventAttributeValue'.", async () => {
             const f = {}
             // @ts-expect-error
             setEventAttributeValue(target, "foo", f)
@@ -63,16 +68,16 @@ describe("Event attribute handlers", () => {
             assertWarning(InvalidAttributeHandler, f)
         })
 
-        it("should return the last set function if listeners are set by 'setEventAttributeValue' multiple times.", () => {
+        await it("should return the last set function if listeners are set by 'setEventAttributeValue' multiple times.", async () => {
             const f = () => {}
-            setEventAttributeValue(target, "foo", () => {})
+            setEventAttributeValue(target, "foo", async () => {})
             setEventAttributeValue(target, "foo", null)
-            setEventAttributeValue(target, "foo", () => {})
+            setEventAttributeValue(target, "foo", async () => {})
             setEventAttributeValue(target, "foo", f)
             assert.strictEqual(getEventAttributeValue(target, "foo"), f)
         })
 
-        it("should handle the string representation of the type argument", () => {
+        await it("should handle the string representation of the type argument", async () => {
             const f = () => {}
             setEventAttributeValue(target, "1000", f)
             // @ts-expect-error
@@ -80,8 +85,20 @@ describe("Event attribute handlers", () => {
         })
     })
 
-    describe("'setEventAttributeValue' function", () => {
-        it("should throw a TypeError if non-EventTarget object is present", () => {
+    await describe("Event attribute handlers 'setEventAttributeValue' function", async () => {
+        let target: EventTarget;
+        const { assertWarning, beforeEachCb, afterEachCb } = setupErrorCheck();
+
+        beforeEach(async () => {
+            beforeEachCb();
+            target = new EventTarget();
+        });
+
+        afterEach(async () => {
+            afterEachCb();
+        });
+
+        await it("should throw a TypeError if non-EventTarget object is present", async () => {
             assert.throws(() => {
                 // @ts-expect-error
                 setEventAttributeValue()
@@ -96,13 +113,13 @@ describe("Event attribute handlers", () => {
             }, TypeError)
         })
 
-        it("should add an event listener if a function is given.", () => {
-            setEventAttributeValue(target, "foo", () => {})
+        await it("should add an event listener if a function is given.", async () => {
+            setEventAttributeValue(target, "foo", async () => {})
             assert.strictEqual(countEventListeners(target), 1)
             assert.strictEqual(countEventListeners(target, "foo"), 1)
         })
 
-        it("should add an event listener if an object is given.", () => {
+        await it("should add an event listener if an object is given.", async () => {
             const f = {}
             // @ts-expect-error
             setEventAttributeValue(target, "foo", f)
@@ -111,15 +128,15 @@ describe("Event attribute handlers", () => {
             assertWarning(InvalidAttributeHandler, f)
         })
 
-        it("should remove an event listener if null is given.", () => {
-            setEventAttributeValue(target, "foo", () => {})
+        await it("should remove an event listener if null is given.", async () => {
+            setEventAttributeValue(target, "foo", async () => {})
             assert.strictEqual(countEventListeners(target, "foo"), 1)
             setEventAttributeValue(target, "foo", null)
             assert.strictEqual(countEventListeners(target, "foo"), 0)
         })
 
-        it("should remove an event listener if primitive is given.", () => {
-            setEventAttributeValue(target, "foo", () => {})
+        await it("should remove an event listener if primitive is given.", async () => {
+            setEventAttributeValue(target, "foo", async () => {})
             assert.strictEqual(countEventListeners(target, "foo"), 1)
             // @ts-expect-error
             setEventAttributeValue(target, "foo", 3)
@@ -128,12 +145,12 @@ describe("Event attribute handlers", () => {
             assertWarning(InvalidAttributeHandler, 3)
         })
 
-        it("should do nothing if primitive is given and the target doesn't have listeners.", () => {
+        await it("should do nothing if primitive is given and the target doesn't have listeners.", async () => {
             setEventAttributeValue(target, "foo", null)
             assert.strictEqual(countEventListeners(target, "foo"), 0)
         })
 
-        it("should handle the string representation of the type argument", () => {
+        await it("should handle the string representation of the type argument", async () => {
             const f = () => {}
             // @ts-expect-error
             setEventAttributeValue(target, 1e3, f)
@@ -142,7 +159,7 @@ describe("Event attribute handlers", () => {
             assert.strictEqual(countEventListeners(target, "1000"), 1)
         })
 
-        it("should keep the added order: attr, normal, capture", () => {
+        await it("should keep the added order: attr, normal, capture", async () => {
             const list: string[] = []
             const f1 = () => {
                 list.push("f1")
@@ -162,7 +179,7 @@ describe("Event attribute handlers", () => {
             assert.deepStrictEqual(list, ["f1", "f2", "f3"])
         })
 
-        it("should keep the added order: normal, capture, attr", () => {
+        await it("should keep the added order: normal, capture, attr", async () => {
             const list: string[] = []
             const f1 = () => {
                 list.push("f1")
@@ -182,7 +199,7 @@ describe("Event attribute handlers", () => {
             assert.deepStrictEqual(list, ["f1", "f2", "f3"])
         })
 
-        it("should keep the added order: capture, attr, normal", () => {
+        await it("should keep the added order: capture, attr, normal", async () => {
             const list: string[] = []
             const f1 = () => {
                 list.push("f1")
@@ -202,7 +219,7 @@ describe("Event attribute handlers", () => {
             assert.deepStrictEqual(list, ["f1", "f2", "f3"])
         })
 
-        it("should not be called by 'dispatchEvent' if the listener is object listener", () => {
+        await it("should not be called by 'dispatchEvent' if the listener is object listener", async () => {
             const f = { handleEvent: spy() }
             // @ts-expect-error
             setEventAttributeValue(target, "foo", f)
@@ -216,4 +233,4 @@ describe("Event attribute handlers", () => {
             assertWarning(InvalidAttributeHandler, f)
         })
     })
-})
+}

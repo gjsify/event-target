@@ -1,5 +1,4 @@
 import { Event } from "./event.js"
-import { Global } from "./global.js"
 import { assertType } from "./misc.js"
 
 /**
@@ -151,8 +150,8 @@ const wrapperClassCache = new WeakMap()
 
 // Make association for wrappers.
 wrapperClassCache.set(Object.prototype, EventWrapper)
-if (typeof Global !== "undefined" && typeof Global.Event !== "undefined") {
-    wrapperClassCache.set(Global.Event.prototype, EventWrapper)
+if (typeof globalThis !== "undefined" && typeof globalThis.Event !== "undefined") {
+    wrapperClassCache.set(globalThis.Event.prototype, EventWrapper)
 }
 
 /**

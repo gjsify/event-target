@@ -1,5 +1,4 @@
 import { EventTarget } from "./event-target.js" // Used as only type, so no circular.
-import { Global } from "./global.js"
 import { assertType } from "./misc.js"
 import {
     CanceledInPassiveListener,
@@ -11,12 +10,14 @@ import {
 
 /*eslint-disable class-methods-use-this */
 
+export type TNativeEvent = globalThis.Event;
+
 /**
  * An implementation of `Event` interface, that wraps a given event object.
  * `EventTarget` shim can control the internal state of this `Event` objects.
  * @see https://dom.spec.whatwg.org/#event
  */
-export class Event<TEventType extends string = string> {
+export class Event<TEventType extends string = string> implements TNativeEvent {
     /**
      * @see https://dom.spec.whatwg.org/#dom-event-none
      */
@@ -429,6 +430,6 @@ for (let i = 0; i < keys.length; ++i) {
 }
 
 // Ensure `event instanceof window.Event` is `true`.
-if (typeof Global !== "undefined" && typeof Global.Event !== "undefined") {
-    Object.setPrototypeOf(Event.prototype, Global.Event.prototype)
+if (typeof globalThis !== "undefined" && typeof globalThis.Event !== "undefined") {
+    Object.setPrototypeOf(Event.prototype, globalThis.Event.prototype)
 }

@@ -1,12 +1,10 @@
-import { Global } from "./global.js"
-
 /**
  * Create a new InvalidStateError instance.
  * @param message The error message.
  */
 export function createInvalidStateError(message: string): Error {
-    if (Global.DOMException) {
-        return new Global.DOMException(message, "InvalidStateError")
+    if (globalThis.DOMException) {
+        return new globalThis.DOMException(message, "InvalidStateError")
     }
 
     if (DOMException == null) {

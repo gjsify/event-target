@@ -1,56 +1,61 @@
-import { Spy, spy } from "@mysticatea/spy"
-import assert from "assert"
-import { Event, EventTarget } from "../src/index"
-import { Global } from "../src/lib/global"
+import { describe, it, assert, Spy, spy, beforeEach, afterEach } from '@gjsify/unit';
+
+import { Event, EventTarget } from "./index.js"
 import {
     CanceledInPassiveListener,
     EventListenerWasDuplicated,
     InvalidEventListener,
     NonCancelableEventWasCanceled,
     OptionWasIgnored,
-} from "../src/lib/warnings"
-import { AbortSignalStub } from "./lib/abort-signal-stub"
-import { countEventListeners } from "./lib/count-event-listeners"
-import { setupErrorCheck } from "./lib/setup-error-check"
+} from "./warnings.js"
+import { AbortSignalStub } from "./test/abort-signal-stub.js"
+import { countEventListeners } from "./test/count-event-listeners.js"
+import { setupErrorCheck } from "./test/setup-error-check.js"
 
-const NativeDOMException: typeof DOMException = Global?.DOMException
-const NativeEventTarget: typeof Event = Global?.EventTarget
-const NativeEvent: typeof Event = Global?.Event
-const NativeKeyboardEvent: typeof KeyboardEvent = Global?.KeyboardEvent
-const NativeMouseEvent: typeof MouseEvent = Global?.MouseEvent
+const NativeDOMException = globalThis.DOMException
+const NativeEventTarget = globalThis.EventTarget
+const NativeEvent = globalThis.Event
+const NativeKeyboardEvent = globalThis.KeyboardEvent
+const NativeMouseEvent = globalThis.MouseEvent
 
-describe("'EventTarget' class", () => {
-    const { assertError, assertWarning } = setupErrorCheck()
+export default async () => {
+    await describe("EventTarget.constructor", async () => {
 
-    describe("constructor", () => {
-        it("should not throw", () => {
+        await it("should not throw", async () => {
             assert(new EventTarget())
         })
 
-        it("should throw a TypeError if called as a function.", () => {
+        await it("should throw a TypeError if called as a function.", async () => {
             assert.throws(() => {
                 // @ts-expect-error
                 EventTarget() // eslint-disable-line new-cap
             }, TypeError)
         })
+    })
 
-        const nativeDescribe = NativeEventTarget ? describe : xdescribe
-        nativeDescribe("if native EventTarget class is present", () => {
-            it("`target instanceof window.EventTarget` should be true", () => {
+    if(NativeEventTarget) {
+        await describe("EventTarget.constructor if native EventTarget class is present", async () => {
+            await it("`target instanceof window.EventTarget` should be true", async () => {
                 const target = new EventTarget()
                 assert(target instanceof NativeEventTarget)
             })
         })
-    })
+    }
 
-    describe("'addEventListener' method", () => {
+    await describe("EventTarget.addEventListener method", async () => {
         let target: EventTarget
+        const { assertWarning, beforeEachCb, afterEachCb } = setupErrorCheck()
 
-        beforeEach(() => {
+        beforeEach(async () => {
+            beforeEachCb();
             target = new EventTarget()
         })
 
-        it("should do nothing if callback is nothing.", () => {
+        afterEach(async () => {
+            afterEachCb();
+        })
+
+        await it("should do nothing if callback is nothing.", async () => {
             // @ts-expect-error
             target.addEventListener()
             target.addEventListener("foo")
@@ -64,7 +69,7 @@ describe("'EventTarget' class", () => {
             assertWarning(InvalidEventListener, undefined)
         })
 
-        it("should throw a TypeError if callback is a primitive.", () => {
+        await it("should throw a TypeError if callback is a primitive.", async () => {
             assert.throws(() => {
                 // @ts-expect-error
                 target.addEventListener("foo", true)
@@ -89,12 +94,12 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(countEventListeners(target), 0)
         })
 
-        it("should add a given event listener.", () => {
+        await it("should add a given event listener.", async () => {
             target.addEventListener("foo", () => {})
             assert.strictEqual(countEventListeners(target), 1)
         })
 
-        it("should add a given object.", () => {
+        await it("should add a given object.", async () => {
             const f = {}
             // @ts-expect-error
             target.addEventListener("foo", f)
@@ -102,7 +107,7 @@ describe("'EventTarget' class", () => {
             assertWarning(InvalidEventListener, f)
         })
 
-        it("should add multiple given event listeners.", () => {
+        await it("should add multiple given event listeners.", async () => {
             target.addEventListener("foo", () => {})
             target.addEventListener("foo", () => {})
             target.addEventListener("foo", () => {})
@@ -113,7 +118,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(countEventListeners(target, "bar"), 1)
         })
 
-        it("should handle non-string types as string types.", () => {
+        await it("should handle non-string types as string types.", async () => {
             // @ts-expect-error
             target.addEventListener(null, () => {})
             // @ts-expect-error
@@ -127,7 +132,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(countEventListeners(target, "1000"), 1)
         })
 
-        it("should not add the same listener twice.", () => {
+        await it("should not add the same listener twice.", async () => {
             const f = () => {}
             target.addEventListener("foo", f)
             target.addEventListener("foo", f)
@@ -139,7 +144,7 @@ describe("'EventTarget' class", () => {
             assertWarning(EventListenerWasDuplicated, "bubble", f)
         })
 
-        it("should add the same listener twice if capture flag is different.", () => {
+        await it("should add the same listener twice if capture flag is different.", async () => {
             const f = () => {}
             target.addEventListener("foo", f, { capture: true })
             target.addEventListener("foo", f, { capture: false })
@@ -148,7 +153,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(countEventListeners(target, "foo"), 2)
         })
 
-        it("should add the same listener twice if capture flag is different. (boolean option)", () => {
+        await it("should add the same listener twice if capture flag is different. (boolean option)", async () => {
             const f = () => {}
             target.addEventListener("foo", f, true)
             target.addEventListener("foo", f, false)
@@ -157,7 +162,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(countEventListeners(target, "foo"), 2)
         })
 
-        it("should not add the same listener twice even if passive flag is different.", () => {
+        await it("should not add the same listener twice even if passive flag is different.", async () => {
             const f = () => {}
             target.addEventListener("foo", f, { passive: true })
             target.addEventListener("foo", f, { passive: false })
@@ -167,7 +172,7 @@ describe("'EventTarget' class", () => {
             assertWarning(OptionWasIgnored, "passive")
         })
 
-        it("should not add the same listener twice even if once flag is different.", () => {
+        await it("should not add the same listener twice even if once flag is different.", async () => {
             const f = () => {}
             target.addEventListener("foo", f, { once: true })
             target.addEventListener("foo", f, { once: false })
@@ -177,7 +182,7 @@ describe("'EventTarget' class", () => {
             assertWarning(OptionWasIgnored, "once")
         })
 
-        it("should not add the same listener twice even if signal flag is different.", () => {
+        await it("should not add the same listener twice even if signal flag is different.", async () => {
             const f = () => {}
             target.addEventListener("foo", f, { signal: null })
             target.addEventListener("foo", f, { signal: new AbortSignalStub() })
@@ -187,7 +192,7 @@ describe("'EventTarget' class", () => {
             assertWarning(OptionWasIgnored, "signal")
         })
 
-        it("should not add the same listener twice even if flags are different.", () => {
+        await it("should not add the same listener twice even if flags are different.", async () => {
             const f = () => {}
             target.addEventListener("foo", f, {
                 passive: true,
@@ -207,7 +212,7 @@ describe("'EventTarget' class", () => {
             assertWarning(OptionWasIgnored, "signal")
         })
 
-        it("should not add the listener if abort signal is present and the `signal.aborted` is true.", () => {
+        await it("should not add the listener if abort signal is present and the `signal.aborted` is true.", async () => {
             const signal = new AbortSignalStub()
             signal.abort()
 
@@ -215,7 +220,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(countEventListeners(target), 0)
         })
 
-        it("should remove the listener if abort signal was notified.", () => {
+        await it("should remove the listener if abort signal was notified.", async () => {
             const signal = new AbortSignalStub()
 
             target.addEventListener("foo", () => {}, { signal })
@@ -226,17 +231,24 @@ describe("'EventTarget' class", () => {
         })
     })
 
-    describe("'removeEventListener' method", () => {
+    await describe("EventTarget.removeEventListener method", async () => {
         const f = () => {}
         let target: EventTarget
 
-        beforeEach(() => {
+        const { assertWarning, beforeEachCb, afterEachCb } = setupErrorCheck()
+
+        beforeEach(async () => {
+            beforeEachCb();
             target = new EventTarget()
             target.addEventListener("foo", f)
             assert.strictEqual(countEventListeners(target), 1)
         })
 
-        it("should do nothing if callback is nothing.", () => {
+        afterEach(async () => {
+            afterEachCb();
+        })
+
+        await it("should do nothing if callback is nothing.", async () => {
             // @ts-expect-error
             target.removeEventListener()
             target.removeEventListener("foo")
@@ -250,7 +262,7 @@ describe("'EventTarget' class", () => {
             assertWarning(InvalidEventListener, undefined)
         })
 
-        it("should throw a TypeError if callback is a primitive.", () => {
+        await it("should throw a TypeError if callback is a primitive.", async () => {
             assert.throws(() => {
                 // @ts-expect-error
                 target.removeEventListener("foo", true)
@@ -275,28 +287,28 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(countEventListeners(target), 1)
         })
 
-        it("should remove a given event listener.", () => {
+        await it("should remove a given event listener.", async () => {
             target.removeEventListener("foo", f)
             assert.strictEqual(countEventListeners(target), 0)
         })
 
-        it("should not remove any listeners if the event type is different.", () => {
+        await it("should not remove any listeners if the event type is different.", async () => {
             target.removeEventListener("bar", f)
             assert.strictEqual(countEventListeners(target), 1)
         })
 
-        it("should not remove any listeners if the callback function is different.", () => {
-            target.removeEventListener("foo", () => {})
+        await it("should not remove any listeners if the callback function is different.", async () => {
+            target.removeEventListener("foo", async () => {})
             assert.strictEqual(countEventListeners(target), 1)
         })
 
-        it("should not remove any listeners if the capture flag is different.", () => {
+        await it("should not remove any listeners if the capture flag is different.", async () => {
             target.removeEventListener("foo", f, true)
             target.removeEventListener("foo", f, { capture: true })
             assert.strictEqual(countEventListeners(target), 1)
         })
 
-        it("should handle capture flag correctly.", () => {
+        await it("should handle capture flag correctly.", async () => {
             target.addEventListener("foo", f, { capture: true })
             assert.strictEqual(countEventListeners(target), 2)
 
@@ -305,19 +317,19 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(countEventListeners(target), 1)
         })
 
-        it("should remove a given event listener even if the passive flag is present.", () => {
+        await it("should remove a given event listener even if the passive flag is present.", async () => {
             // @ts-expect-error
             target.removeEventListener("foo", f, { passive: true })
             assert.strictEqual(countEventListeners(target), 0)
         })
 
-        it("should remove a given event listener even if the once flag is present.", () => {
+        await it("should remove a given event listener even if the once flag is present.", async () => {
             // @ts-expect-error
             target.removeEventListener("foo", f, { once: true })
             assert.strictEqual(countEventListeners(target), 0)
         })
 
-        it("should remove a given event listener even if the signal is present.", () => {
+        await it("should remove a given event listener even if the signal is present.", async () => {
             // @ts-expect-error
             target.removeEventListener("foo", f, {
                 signal: new AbortSignalStub(),
@@ -325,7 +337,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(countEventListeners(target), 0)
         })
 
-        it("should handle non-string types as string types.", () => {
+        await it("should handle non-string types as string types.", async () => {
             target.addEventListener("null", f)
             target.addEventListener("undefined", f)
             target.addEventListener("1000", f)
@@ -345,26 +357,32 @@ describe("'EventTarget' class", () => {
         })
     })
 
-    describe("'dispatchEvent' method", () => {
+    await describe("EventTarget.dispatchEvent method", async () => {
         let target: EventTarget<{ foo: Event }>
+        const { assertError, assertWarning, beforeEachCb, afterEachCb } = setupErrorCheck()
 
-        beforeEach(() => {
+        beforeEach(async () => {
+            beforeEachCb();
             target = new EventTarget()
         })
 
-        it("should throw a TypeError if the argument was not present", () => {
+        afterEach(async () => {
+            afterEachCb();
+        })
+
+        await it("should throw a TypeError if the argument was not present", async () => {
             assert.throws(() => {
                 // @ts-expect-error
                 target.dispatchEvent()
             }, TypeError)
         })
 
-        it("should not throw even if listeners don't exist", () => {
+        await it("should not throw even if listeners don't exist", async () => {
             const retv = target.dispatchEvent(new Event("foo"))
             assert.strictEqual(retv, true)
         })
 
-        it("should not throw even if empty object had been added", () => {
+        await it("should not throw even if empty object had been added", async () => {
             const f = {}
             // @ts-expect-error
             target.addEventListener("foo", f)
@@ -373,7 +391,7 @@ describe("'EventTarget' class", () => {
             assertWarning(InvalidEventListener, f)
         })
 
-        it("should call obj.handleEvent method even if added later", () => {
+        await it("should call obj.handleEvent method even if added later", async () => {
             const event = new Event("foo")
             const f: { handleEvent?: Spy<(event: Event) => void> } = {}
             // @ts-expect-error
@@ -392,7 +410,7 @@ describe("'EventTarget' class", () => {
             assertWarning(InvalidEventListener, f)
         })
 
-        it("should call a registered listener.", () => {
+        await it("should call a registered listener.", async () => {
             const f1 = spy((_event: Event) => {})
             const f2 = spy((_event: Event) => {})
             target.addEventListener("foo", f1)
@@ -416,7 +434,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(retv, true)
         })
 
-        it("should not call subsequent listeners if a listener called `event.stopImmediatePropagation()`.", () => {
+        await it("should not call subsequent listeners if a listener called `event.stopImmediatePropagation()`.", async () => {
             const f1 = spy((_event: Event) => {})
             const f2 = spy((event: Event) => {
                 event.stopImmediatePropagation()
@@ -437,7 +455,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(retv, true)
         })
 
-        it("should return true even if a listener called 'event.preventDefault()' if the event is not cancelable.", () => {
+        await it("should return true even if a listener called 'event.preventDefault()' if the event is not cancelable.", async () => {
             target.addEventListener("foo", event => {
                 event.preventDefault()
             })
@@ -447,7 +465,7 @@ describe("'EventTarget' class", () => {
             assertWarning(NonCancelableEventWasCanceled)
         })
 
-        it("should return false if a listener called 'event.preventDefault()' and the event is cancelable.", () => {
+        await it("should return false if a listener called 'event.preventDefault()' and the event is cancelable.", async () => {
             target.addEventListener("foo", event => {
                 event.preventDefault()
             })
@@ -458,7 +476,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(retv, false)
         })
 
-        it("should return true even if a listener called 'event.preventDefault()' if passive option is present.", () => {
+        await it("should return true even if a listener called 'event.preventDefault()' if passive option is present.", async () => {
             target.addEventListener(
                 "foo",
                 event => {
@@ -474,7 +492,7 @@ describe("'EventTarget' class", () => {
             assertWarning(CanceledInPassiveListener)
         })
 
-        it("should return true even if a listener called 'event.returnValue = false' if the event is not cancelable.", () => {
+        await it("should return true even if a listener called 'event.returnValue = false' if the event is not cancelable.", async () => {
             target.addEventListener("foo", event => {
                 event.returnValue = false
             })
@@ -484,7 +502,7 @@ describe("'EventTarget' class", () => {
             assertWarning(NonCancelableEventWasCanceled)
         })
 
-        it("should return false if a listener called 'event.returnValue = false' and the event is cancelable.", () => {
+        await it("should return false if a listener called 'event.returnValue = false' and the event is cancelable.", async () => {
             target.addEventListener("foo", event => {
                 event.returnValue = false
             })
@@ -495,7 +513,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(retv, false)
         })
 
-        it("should return true even if a listener called 'event.returnValue = false' if passive option is present.", () => {
+        await it("should return true even if a listener called 'event.returnValue = false' if passive option is present.", async () => {
             target.addEventListener(
                 "foo",
                 event => {
@@ -511,7 +529,7 @@ describe("'EventTarget' class", () => {
             assertWarning(CanceledInPassiveListener)
         })
 
-        it("should remove a listener if once option is present.", () => {
+        await it("should remove a listener if once option is present.", async () => {
             const f1 = spy()
             const f2 = spy()
             const f3 = spy()
@@ -529,7 +547,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(retv, true)
         })
 
-        it("should handle removing in event listeners correctly. Remove 0 at 0.", () => {
+        await it("should handle removing in event listeners correctly. Remove 0 at 0.", async () => {
             const f1 = spy(() => {
                 target.removeEventListener("foo", f1)
             })
@@ -547,7 +565,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(f3.calls.length, 2, "f3 should be called twice")
         })
 
-        it("should handle removing in event listeners correctly. Remove 1 at 0.", () => {
+        await it("should handle removing in event listeners correctly. Remove 1 at 0.", async () => {
             const f1 = spy(() => {
                 target.removeEventListener("foo", f2)
             })
@@ -565,7 +583,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(f3.calls.length, 2, "f3 should be called twice")
         })
 
-        it("should handle removing in event listeners correctly. Remove 0 at 1.", () => {
+        await it("should handle removing in event listeners correctly. Remove 0 at 1.", async () => {
             const f1 = spy()
             const f2 = spy(() => {
                 target.removeEventListener("foo", f1)
@@ -583,7 +601,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(f3.calls.length, 2, "f3 should be called twice")
         })
 
-        it("should handle removing in event listeners correctly. Remove 1 at 1.", () => {
+        await it("should handle removing in event listeners correctly. Remove 1 at 1.", async () => {
             const f1 = spy()
             const f2 = spy(() => {
                 target.removeEventListener("foo", f2)
@@ -601,7 +619,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(f3.calls.length, 2, "f3 should be called twice")
         })
 
-        it("should handle removing in event listeners correctly. Remove 2 at 1.", () => {
+        await it("should handle removing in event listeners correctly. Remove 2 at 1.", async () => {
             const f1 = spy()
             const f2 = spy(() => {
                 target.removeEventListener("foo", f3)
@@ -619,7 +637,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(f3.calls.length, 0, "f3 should be not called")
         })
 
-        it("should handle removing in event listeners correctly. Remove 2 at 2.", () => {
+        await it("should handle removing in event listeners correctly. Remove 2 at 2.", async () => {
             const f1 = spy()
             const f2 = spy()
             const f3 = spy(() => {
@@ -637,7 +655,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(f3.calls.length, 1, "f3 should be called once")
         })
 
-        it("should handle removing in event listeners correctly along with once flag.", () => {
+        await it("should handle removing in event listeners correctly along with once flag.", async () => {
             const f1 = spy()
             const f2 = spy(() => {
                 target.removeEventListener("foo", f2)
@@ -655,7 +673,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(f3.calls.length, 2, "f3 should be called twice")
         })
 
-        it("should handle removing in event listeners correctly along with once flag. (2)", () => {
+        await it("should handle removing in event listeners correctly along with once flag. (2)", async () => {
             const f1 = spy()
             const f2 = spy(() => {
                 target.removeEventListener("foo", f3)
@@ -676,7 +694,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(f4.calls.length, 2, "f4 should be called twice")
         })
 
-        it("should handle removing once and remove", () => {
+        await it("should handle removing once and remove", async () => {
             const f1 = spy(() => {
                 target.removeEventListener("foo", f1)
             })
@@ -688,7 +706,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(f1.calls.length, 1, "f1 should be called once")
         })
 
-        it("should handle removing once and signal", () => {
+        await it("should handle removing once and signal", async () => {
             const signal = new AbortSignalStub()
             const f1 = spy(() => {
                 signal.abort()
@@ -701,7 +719,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(f1.calls.length, 1, "f1 should be called once")
         })
 
-        it("should handle once in nested dispatches", () => {
+        await it("should handle once in nested dispatches", async () => {
             const f1 = spy(() => {
                 target.dispatchEvent(new Event("foo"))
                 assert.strictEqual(
@@ -729,7 +747,7 @@ describe("'EventTarget' class", () => {
             )
         })
 
-        it("should not call the listeners that were added after the 'dispatchEvent' method call.", () => {
+        await it("should not call the listeners that were added after the 'dispatchEvent' method call.", async () => {
             const f1 = spy()
             const f2 = spy(() => {
                 target.addEventListener("foo", f3)
@@ -749,7 +767,7 @@ describe("'EventTarget' class", () => {
             assertWarning(EventListenerWasDuplicated, "bubble", f3)
         })
 
-        it("should not call the listeners that were added after the 'dispatchEvent' method call. (the last listener is removed at first dispatch)", () => {
+        await it("should not call the listeners that were added after the 'dispatchEvent' method call. (the last listener is removed at first dispatch)", async () => {
             const f1 = spy()
             const f2 = spy(() => {
                 target.addEventListener("foo", f3)
@@ -766,7 +784,7 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(f3.calls.length, 1, "f3 should be called once")
         })
 
-        it("should catch exceptions that are thrown from listeners and call the error handler.", () => {
+        await it("should catch exceptions that are thrown from listeners and call the error handler.", async () => {
             const error = new Error("test")
             const f1 = spy()
             const f2 = spy(() => {
@@ -782,10 +800,11 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(f1.calls.length, 1, "f1 should be called")
             assert.strictEqual(f2.calls.length, 1, "f2 should be called")
             assert.strictEqual(f3.calls.length, 1, "f3 should be called")
+            
             assertError(error)
         })
 
-        it("should catch exceptions that are thrown from listeners and call the error handler, even if the exception was not an Error object.", () => {
+        await it("should catch exceptions that are thrown from listeners and call the error handler, even if the exception was not an Error object.", async () => {
             const error = "error"
             const f1 = spy()
             const f2 = spy(() => {
@@ -804,7 +823,7 @@ describe("'EventTarget' class", () => {
             assertError(error)
         })
 
-        it("should throw a InvalidStateError if the given event is being used", () => {
+        await it("should throw a InvalidStateError if the given event is being used", async () => {
             const event = new Event("foo")
             const f = spy(() => {
                 target.dispatchEvent(event)
@@ -819,30 +838,32 @@ describe("'EventTarget' class", () => {
             assertError("This event has been in dispatching.")
         })
 
-        const withNativeDOME = NativeDOMException ? describe : xdescribe
-        withNativeDOME(
-            "if the native DOMException is present, the InvalidStateError",
-            () => {
-                it("should be a DOMException instance.", () => {
-                    const event = new Event("foo")
-                    const f = spy(() => {
-                        target.dispatchEvent(event)
-                    })
-                    target.addEventListener("foo", f, { once: true })
+        if(NativeDOMException) {
+            await it("if the native DOMException is present, the InvalidStateError should be a DOMException instance.", async () => {
+                const event = new Event("foo")
+                const f = spy(() => {
                     target.dispatchEvent(event)
+                })
+                target.addEventListener("foo", f, { once: true })
+                target.dispatchEvent(event)
 
-                    assert.strictEqual(f.calls.length, 1, "f should be called")
-                    assert(f.calls[0].type === "throw", "f shold throw a value")
+                assert.strictEqual(f.calls.length, 1, "f should be called")
+                assert(f.calls[0].type === "throw", "f should throw a value")
+
+                if (f.calls[0].type === "throw") {
                     assert(
                         f.calls[0].throw instanceof NativeDOMException,
                         "the thrown value should be a DOMException",
                     )
-                    assertError("This event has been in dispatching.")
-                })
-            },
-        )
+                } else {
+                    assert(false, "f should throw a value")
+                }
 
-        it("should not call event listeners if given event was stopped", () => {
+                assertError("This event has been in dispatching.")
+            })
+        }
+
+        await it("should not call event listeners if given event was stopped", async () => {
             const event = new Event("foo")
             const f = spy()
 
@@ -853,13 +874,12 @@ describe("'EventTarget' class", () => {
             assert.strictEqual(f.calls.length, 0, "f should not be called")
         })
 
-        const withNativeEvent = NativeEvent ? describe : xdescribe
-        withNativeEvent("if native Event class is present", () => {
-            it("should call a registered listener even if the argument is a native Event object.", () => {
+        if(NativeEvent) {
+            await it("if native Event class is present it should call a registered listener even if the argument is a native Event object.", async () => {
                 const f1 = spy((_event: Event) => {})
                 target.addEventListener("foo", f1)
 
-                const retv = target.dispatchEvent(new NativeEvent("foo"))
+                const retv = target.dispatchEvent(new NativeEvent("foo") as Event)
                 assert.strictEqual(
                     f1.calls.length,
                     1,
@@ -872,52 +892,52 @@ describe("'EventTarget' class", () => {
                 assert.strictEqual(retv, true)
             })
 
-            describe("if the argument is a native Event object, the event object in the listener", () => {
-                it("'type' property should be the same value as the original.", () => {
+            await describe("if the argument is a native Event object, the event object in the listener", async () => {
+                await it("'type' property should be the same value as the original.", async () => {
                     const event = new NativeEvent("foo")
                     let ok = false
                     target.addEventListener("foo", wrapper => {
                         ok = true
                         assert.strictEqual(wrapper.type, event.type)
                     })
-                    target.dispatchEvent(event)
+                    target.dispatchEvent(event as Event)
                     assert(ok)
                 })
 
-                it("'target' property should be the event target that is dispatching.", () => {
+                await it("'target' property should be the event target that is dispatching.", async () => {
                     const event = new NativeEvent("foo")
                     let ok = false
                     target.addEventListener("foo", wrapper => {
                         ok = true
                         assert.strictEqual(wrapper.target, target)
                     })
-                    target.dispatchEvent(event)
+                    target.dispatchEvent(event as Event)
                     assert(ok)
                 })
 
-                it("'currentTarget' property should be the event target that is dispatching.", () => {
+                await it("'currentTarget' property should be the event target that is dispatching.", async () => {
                     const event = new NativeEvent("foo")
                     let ok = false
                     target.addEventListener("foo", wrapper => {
                         ok = true
                         assert.strictEqual(wrapper.currentTarget, target)
                     })
-                    target.dispatchEvent(event)
+                    target.dispatchEvent(event as Event)
                     assert(ok)
                 })
 
-                it("'eventPhase' property should be 2.", () => {
+                await it("'eventPhase' property should be 2.", async () => {
                     const event = new NativeEvent("foo")
                     let ok = false
                     target.addEventListener("foo", wrapper => {
                         ok = true
                         assert.strictEqual(wrapper.eventPhase, 2)
                     })
-                    target.dispatchEvent(event)
+                    target.dispatchEvent(event as Event)
                     assert(ok)
                 })
 
-                it("'stopPropagation()' method should change both 'cancelBubble' property.", () => {
+                await it("'stopPropagation()' method should change both 'cancelBubble' property.", async () => {
                     const event = new NativeEvent("foo")
                     let ok = false
                     target.addEventListener("foo", wrapper => {
@@ -926,18 +946,18 @@ describe("'EventTarget' class", () => {
                         assert.strictEqual(wrapper.cancelBubble, true)
                         assert.strictEqual(event.cancelBubble, true)
                     })
-                    target.dispatchEvent(event)
+                    target.dispatchEvent(event as Event)
                     assert(ok)
                 })
 
-                it("'cancelBubble' property should be the same value as the original.", () => {
+                await it("'cancelBubble' property should be the same value as the original.", async () => {
                     const event = new NativeEvent("foo")
                     event.stopPropagation()
                     let ok = true
-                    target.addEventListener("foo", wrapper => {
+                    target.addEventListener("foo", (_) => {
                         ok = false
                     })
-                    target.dispatchEvent(event)
+                    target.dispatchEvent(event as Event)
                     assert(ok)
                 })
 
@@ -951,9 +971,8 @@ describe("'EventTarget' class", () => {
                     return !e.cancelBubble
                 })()
 
-                ;(isStopImmediatePropagationBuggy ? xit : it)(
-                    "'stopImmediatePropagation()' method should change both 'cancelBubble' property.",
-                    () => {
+                if(!isStopImmediatePropagationBuggy) {
+                    await it("'stopImmediatePropagation()' method should change both 'cancelBubble' property.", async () => {
                         const event = new NativeEvent("foo")
                         let ok = false
                         target.addEventListener("foo", wrapper => {
@@ -970,34 +989,34 @@ describe("'EventTarget' class", () => {
                                 "original's cancelBubble should be true",
                             )
                         })
-                        target.dispatchEvent(event)
+                        target.dispatchEvent(event as Event)
                         assert(ok)
-                    },
-                )
+                    })
+                }
 
-                it("'bubbles' property should be the same value as the original.", () => {
+                await it("'bubbles' property should be the same value as the original.", async () => {
                     const event = new NativeEvent("foo", { bubbles: true })
                     let ok = false
                     target.addEventListener("foo", wrapper => {
                         ok = true
                         assert.strictEqual(wrapper.bubbles, event.bubbles)
                     })
-                    target.dispatchEvent(event)
+                    target.dispatchEvent(event as Event)
                     assert(ok)
                 })
 
-                it("'cancelable' property should be the same value as the original.", () => {
+                await it("'cancelable' property should be the same value as the original.", async () => {
                     const event = new NativeEvent("foo", { cancelable: true })
                     let ok = false
                     target.addEventListener("foo", wrapper => {
                         ok = true
                         assert.strictEqual(wrapper.cancelable, event.cancelable)
                     })
-                    target.dispatchEvent(event)
+                    target.dispatchEvent(event as Event)
                     assert(ok)
                 })
 
-                it("'returnValue' property should be the same value as the original.", () => {
+                await it("'returnValue' property should be the same value as the original.", async () => {
                     const event = new NativeEvent("foo", { cancelable: true })
                     event.preventDefault()
                     let ok = false
@@ -1008,11 +1027,11 @@ describe("'EventTarget' class", () => {
                             event.returnValue,
                         )
                     })
-                    target.dispatchEvent(event)
+                    target.dispatchEvent(event as Event)
                     assert(ok)
                 })
 
-                it("'preventDefault()' method should change both 'defaultPrevented' property.", () => {
+                await it("'preventDefault()' method should change both 'defaultPrevented' property.", async () => {
                     const event = new NativeEvent("foo", { cancelable: true })
                     let ok = false
                     target.addEventListener("foo", wrapper => {
@@ -1021,11 +1040,11 @@ describe("'EventTarget' class", () => {
                         assert.strictEqual(wrapper.defaultPrevented, true)
                         assert.strictEqual(event.defaultPrevented, true)
                     })
-                    target.dispatchEvent(event)
+                    target.dispatchEvent(event as Event)
                     assert(ok)
                 })
 
-                it("'defaultPrevented' property should be the same value as the original.", () => {
+                await it("'defaultPrevented' property should be the same value as the original.", async () => {
                     const event = new NativeEvent("foo", { cancelable: true })
                     event.preventDefault()
                     let ok = false
@@ -1036,22 +1055,22 @@ describe("'EventTarget' class", () => {
                             event.defaultPrevented,
                         )
                     })
-                    target.dispatchEvent(event)
+                    target.dispatchEvent(event as Event)
                     assert(ok)
                 })
 
-                it("'composed' property should be the same value as the original.", () => {
+                await it("'composed' property should be the same value as the original.", async () => {
                     const event = new NativeEvent("foo", { composed: true })
                     let ok = false
                     target.addEventListener("foo", wrapper => {
                         ok = true
                         assert.strictEqual(wrapper.composed, event.composed)
                     })
-                    target.dispatchEvent(event)
+                    target.dispatchEvent(event as Event)
                     assert(ok)
                 })
 
-                it("'timeStamp' property should be the same value as the original.", async () => {
+                await it("'timeStamp' property should be the same value as the original.", async () => {
                     const event = new NativeEvent("foo")
                     await new Promise(resolve => setTimeout(resolve, 100))
                     let ok = false
@@ -1059,16 +1078,16 @@ describe("'EventTarget' class", () => {
                         ok = true
                         assert.strictEqual(wrapper.timeStamp, event.timeStamp)
                     })
-                    target.dispatchEvent(event)
+                    target.dispatchEvent(event as Event)
                     assert(ok)
                 })
             })
-        })
+        }
 
-        const withNativeKE = NativeKeyboardEvent ? describe : xdescribe
-        withNativeKE("if native KeyboardEvent class is present", () => {
-            describe("if the argument is a native KeyboardEvent object, the event object in the listener", () => {
-                it("'key' property should be the same value as the original.", () => {
+        if(NativeKeyboardEvent) {
+            await describe("if native KeyboardEvent class is present and if the argument is a native KeyboardEvent object, the event object in the listener", async () => {
+                await it("'key' property should be the same value as the original.", async () => {
+                    // @ts-ignore
                     const customTarget = new EventTarget<{
                         foo: KeyboardEvent
                     }>()
@@ -1080,11 +1099,12 @@ describe("'EventTarget' class", () => {
                         ok = true
                         assert.strictEqual(wrapper.key, event.key)
                     })
-                    customTarget.dispatchEvent(event)
+                    customTarget.dispatchEvent(event as Event)
                     assert(ok)
                 })
 
-                it("'getModifierState' method should return the same value as the original.", () => {
+                await it("'getModifierState' method should return the same value as the original.", async () => {
+                    // @ts-ignore
                     const customTarget = new EventTarget<{
                         foo: KeyboardEvent
                     }>()
@@ -1099,16 +1119,16 @@ describe("'EventTarget' class", () => {
                             event.getModifierState("Shift"),
                         )
                     })
-                    customTarget.dispatchEvent(event)
+                    customTarget.dispatchEvent(event as Event)
                     assert(ok)
                 })
             })
-        })
+        }
 
-        const withNativeME = NativeMouseEvent ? describe : xdescribe
-        withNativeME("if native MouseEvent class is present", () => {
-            describe("if the argument is a native MouseEvent object, the event object in the listener", () => {
-                it("'button' property should be the same value as the original.", () => {
+        if(NativeMouseEvent) {
+            await describe("if native MouseEvent class is present and if the argument is a native MouseEvent object, the event object in the listener", async () => {
+                await it("'button' property should be the same value as the original.", async () => {
+                    // @ts-ignore
                     const customTarget = new EventTarget<{ foo: MouseEvent }>()
                     const event = new NativeMouseEvent("foo", { button: 1 })
                     let ok = false
@@ -1116,11 +1136,12 @@ describe("'EventTarget' class", () => {
                         ok = true
                         assert.strictEqual(wrapper.button, event.button)
                     })
-                    customTarget.dispatchEvent(event)
+                    customTarget.dispatchEvent(event as Event)
                     assert(ok)
                 })
 
-                it("'getModifierState' method should return the same value as the original.", () => {
+                await it("'getModifierState' method should return the same value as the original.", async () => {
+                    // @ts-ignore
                     const customTarget = new EventTarget<{ foo: MouseEvent }>()
                     const event = new NativeMouseEvent("foo", {
                         shiftKey: true,
@@ -1133,13 +1154,13 @@ describe("'EventTarget' class", () => {
                             event.getModifierState("Shift"),
                         )
                     })
-                    customTarget.dispatchEvent(event)
+                    customTarget.dispatchEvent(event as Event)
                     assert(ok)
                 })
             })
-        })
+        }
 
-        describe("if the argument is a plain object, the event object in the listener", () => {
+        await describe("if the argument is a plain object, the event object in the listener", async () => {
             class MyEvent extends Event {
                 writable: number
                 constructor(writable: number) {
@@ -1151,11 +1172,11 @@ describe("'EventTarget' class", () => {
             // eslint-disable-next-line no-shadow
             let target: EventTarget<{ foo: Event; bar: MyEvent }, "strict">
 
-            beforeEach(() => {
+            beforeEach(async () => {
                 target = new EventTarget()
             })
 
-            it("'type' property should be the same value as the original.", () => {
+            await it("'type' property should be the same value as the original.", async () => {
                 const event = { type: "foo" } as const
                 let ok = false
                 target.addEventListener("foo", wrapper => {
@@ -1166,7 +1187,7 @@ describe("'EventTarget' class", () => {
                 assert(ok)
             })
 
-            it("'target' property should be the event target that is dispatching.", () => {
+            await it("'target' property should be the event target that is dispatching.", async () => {
                 const event = { type: "foo" } as const
                 let ok = false
                 target.addEventListener("foo", wrapper => {
@@ -1177,7 +1198,7 @@ describe("'EventTarget' class", () => {
                 assert(ok)
             })
 
-            it("'currentTarget' property should be the event target that is dispatching.", () => {
+            await it("'currentTarget' property should be the event target that is dispatching.", async () => {
                 const event = { type: "foo" } as const
                 let ok = false
                 target.addEventListener("foo", wrapper => {
@@ -1188,7 +1209,7 @@ describe("'EventTarget' class", () => {
                 assert(ok)
             })
 
-            it("'eventPhase' property should be 2.", () => {
+            await it("'eventPhase' property should be 2.", async () => {
                 const event = { type: "foo" } as const
                 let ok = false
                 target.addEventListener("foo", wrapper => {
@@ -1199,7 +1220,7 @@ describe("'EventTarget' class", () => {
                 assert(ok)
             })
 
-            it("'stopPropagation()' method should call the 'stopPropagation()' method on the original.", () => {
+            await it("'stopPropagation()' method should call the 'stopPropagation()' method on the original.", async () => {
                 const event = { type: "foo", stopPropagation: spy() } as const
                 target.addEventListener("foo", wrapper => {
                     wrapper.stopPropagation()
@@ -1212,7 +1233,7 @@ describe("'EventTarget' class", () => {
                 )
             })
 
-            it("'stopPropagation()' method should not throw any error even if the original didn't have the 'stopPropagation()' method.", () => {
+            await it("'stopPropagation()' method should not throw any error even if the original didn't have the 'stopPropagation()' method.", async () => {
                 const event = { type: "foo" } as const
                 let ok = true
                 target.addEventListener("foo", wrapper => {
@@ -1223,17 +1244,17 @@ describe("'EventTarget' class", () => {
                 assert(ok)
             })
 
-            it("'cancelBubble' property should be the same value as the original.", () => {
+            await it("'cancelBubble' property should be the same value as the original.", async () => {
                 const event = { type: "foo", cancelBubble: true } as const
                 let ok = true
-                target.addEventListener("foo", wrapper => {
+                target.addEventListener("foo", (_) => {
                     ok = false
                 })
                 target.dispatchEvent(event)
                 assert(ok)
             })
 
-            it("assigning to 'cancelBubble' property should change both the wrapper and the original.", () => {
+            await it("assigning to 'cancelBubble' property should change both the wrapper and the original.", async () => {
                 const event = { type: "foo", cancelBubble: false } as const
                 let ok = false
                 target.addEventListener("foo", wrapper => {
@@ -1246,7 +1267,7 @@ describe("'EventTarget' class", () => {
                 assert(ok)
             })
 
-            it("assigning to 'cancelBubble' property should change only the wrapper if the original didn't have the property.", () => {
+            await it("assigning to 'cancelBubble' property should change only the wrapper if the original didn't have the property.", async () => {
                 const event = { type: "foo" } as const
                 let ok = false
                 target.addEventListener("foo", wrapper => {
@@ -1260,7 +1281,7 @@ describe("'EventTarget' class", () => {
                 assert(ok)
             })
 
-            it("'stopImmediatePropagation()' method should call the 'stopImmediatePropagation()' method on the original.", () => {
+            await it("'stopImmediatePropagation()' method should call the 'stopImmediatePropagation()' method on the original.", async () => {
                 const event = {
                     type: "foo",
                     stopImmediatePropagation: spy(),
@@ -1276,7 +1297,7 @@ describe("'EventTarget' class", () => {
                 )
             })
 
-            it("'stopImmediatePropagation()' method should not throw any error even if the original didn't have the 'stopImmediatePropagation()' method.", () => {
+            await it("'stopImmediatePropagation()' method should not throw any error even if the original didn't have the 'stopImmediatePropagation()' method.", async () => {
                 const event = { type: "foo" } as const
                 let ok = true
                 target.addEventListener("foo", wrapper => {
@@ -1287,7 +1308,7 @@ describe("'EventTarget' class", () => {
                 assert(ok)
             })
 
-            it("'bubbles' property should be the same value as the original.", () => {
+            await it("'bubbles' property should be the same value as the original.", async () => {
                 const event = { type: "foo", bubbles: true } as const
                 let ok = false
                 target.addEventListener("foo", wrapper => {
@@ -1298,7 +1319,7 @@ describe("'EventTarget' class", () => {
                 assert(ok)
             })
 
-            it("'cancelable' property should be the same value as the original.", () => {
+            await it("'cancelable' property should be the same value as the original.", async () => {
                 const event = { type: "foo", cancelable: true } as const
                 let ok = false
                 target.addEventListener("foo", wrapper => {
@@ -1309,7 +1330,7 @@ describe("'EventTarget' class", () => {
                 assert(ok)
             })
 
-            it("'returnValue' property should be the same value as the original.", () => {
+            await it("'returnValue' property should be the same value as the original.", async () => {
                 const event = { type: "foo", returnValue: true } as const
                 let ok = false
                 target.addEventListener("foo", wrapper => {
@@ -1320,7 +1341,7 @@ describe("'EventTarget' class", () => {
                 assert(ok)
             })
 
-            it("assigning to 'returnValue' property should change both the wrapper and the original.", () => {
+            await it("assigning to 'returnValue' property should change both the wrapper and the original.", async () => {
                 const event = {
                     type: "foo",
                     cancelable: true,
@@ -1337,7 +1358,7 @@ describe("'EventTarget' class", () => {
                 assert(ok)
             })
 
-            it("assigning to 'returnValue' property should change only the wrapper if the original didn't have the property.", () => {
+            await it("assigning to 'returnValue' property should change only the wrapper if the original didn't have the property.", async () => {
                 const event = {
                     type: "foo",
                     cancelable: true,
@@ -1354,7 +1375,7 @@ describe("'EventTarget' class", () => {
                 assert(ok)
             })
 
-            it("'preventDefault()' method should call the 'preventDefault()' method on the original.", () => {
+            await it("'preventDefault()' method should call the 'preventDefault()' method on the original.", async () => {
                 const event = {
                     type: "foo",
                     cancelable: true,
@@ -1371,7 +1392,7 @@ describe("'EventTarget' class", () => {
                 )
             })
 
-            it("'preventDefault()' method should not throw any error even if the original didn't have the 'preventDefault()' method.", () => {
+            await it("'preventDefault()' method should not throw any error even if the original didn't have the 'preventDefault()' method.", async () => {
                 const event = { type: "foo", cancelable: true } as const
                 let ok = true
                 target.addEventListener("foo", wrapper => {
@@ -1382,7 +1403,7 @@ describe("'EventTarget' class", () => {
                 assert(ok)
             })
 
-            it("'composed' property should be the same value as the original.", () => {
+            await it("'composed' property should be the same value as the original.", async () => {
                 const event = { type: "foo", composed: true } as const
                 let ok = false
                 target.addEventListener("foo", wrapper => {
@@ -1393,7 +1414,7 @@ describe("'EventTarget' class", () => {
                 assert(ok)
             })
 
-            it("'timeStamp' property should be the same value as the original.", async () => {
+            await it("'timeStamp' property should be the same value as the original.", async () => {
                 const event = { type: "foo", timeStamp: Date.now() } as const
                 await new Promise(resolve => setTimeout(resolve, 100))
                 let ok = false
@@ -1405,7 +1426,7 @@ describe("'EventTarget' class", () => {
                 assert(ok)
             })
 
-            it("'timeStamp' property should be a number even if the original didn't have the 'timeStamp' property.", () => {
+            await it("'timeStamp' property should be a number even if the original didn't have the 'timeStamp' property.", async () => {
                 const event = { type: "foo" } as const
                 let ok = false
                 target.addEventListener("foo", wrapper => {
@@ -1416,7 +1437,7 @@ describe("'EventTarget' class", () => {
                 assert(ok)
             })
 
-            it("should redirect instance properties.", () => {
+            await it("should redirect instance properties.", async () => {
                 const event = { type: "bar", writable: 1 } as const
                 target.addEventListener("bar", wrapper => {
                     assert.strictEqual(wrapper.writable, 1)
@@ -1426,7 +1447,7 @@ describe("'EventTarget' class", () => {
                 assert.strictEqual(event.writable, 2)
             })
 
-            it("should not throw even if prototype is null.", () => {
+            await it("should not throw even if prototype is null.", async () => {
                 const event = Object.assign(
                     Object.create(null) as {},
                     { type: "bar", writable: 1 } as const,
@@ -1441,8 +1462,8 @@ describe("'EventTarget' class", () => {
         })
     })
 
-    describe("for-in", () => {
-        it("should enumerate 3 property names", () => {
+    await describe("EventTarget for-in", async () => {
+        await it("should enumerate 3 property names", async () => {
             const target = new EventTarget()
             const actualKeys = []
             const expectedKeys = [
@@ -1462,7 +1483,7 @@ describe("'EventTarget' class", () => {
             )
         })
 
-        it("should enumerate no property names in static", () => {
+        await it("should enumerate no property names in static", async () => {
             const keys = new Set()
 
             // eslint-disable-next-line @mysticatea/prefer-for-of
@@ -1473,4 +1494,4 @@ describe("'EventTarget' class", () => {
             assert.deepStrictEqual(keys, new Set())
         })
     })
-})
+}

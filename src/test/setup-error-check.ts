@@ -1,4 +1,4 @@
-import { assert, beforeEach, afterEach } from '@gjsify/unit';
+import { assert } from '@gjsify/unit';
 import { setErrorHandler, setWarningHandler } from "../index.js"
 import { Warning } from "../warning-handler.js"
 
@@ -6,7 +6,7 @@ export function setupErrorCheck() {
     const errors: Error[] = []
     const warnings: setWarningHandler.Warning[] = []
 
-    beforeEach(async () => {
+    const beforeEachCb = async () => {
         errors.length = 0
         warnings.length = 0
         setErrorHandler((error: Error) => {
@@ -15,9 +15,9 @@ export function setupErrorCheck() {
         setWarningHandler((warning: setWarningHandler.Warning) => {
             warnings.push(warning)
         })
-    })
+    }
 
-    afterEach(async () => {
+    const afterEachCb = async () => {
         setErrorHandler(undefined)
         setWarningHandler(undefined)
         try {
@@ -27,7 +27,7 @@ export function setupErrorCheck() {
             // ?;(this.test as any)?.error(error)
             throw error;
         }
-    })
+    }
 
     function assertError(errorOrMessage: Error | string): void {
         const actualError = errors.shift()
@@ -47,5 +47,5 @@ export function setupErrorCheck() {
         assert.deepStrictEqual(actualWarning, { ...warning, args })
     }
 
-    return { assertError, assertWarning }
+    return { assertError, assertWarning, beforeEachCb, afterEachCb }
 }

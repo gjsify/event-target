@@ -1,7 +1,6 @@
 import { createInvalidStateError } from "./dom-exception.js"
 import { Event, getEventInternalData } from "./event.js"
 import { EventWrapper } from "./event-wrapper.js"
-import { Global } from "./global.js"
 import {
     invokeCallback,
     isCapture,
@@ -28,6 +27,8 @@ import {
     OptionWasIgnored,
 } from "./warnings.js"
 
+export type TNativeEventTarget = globalThis.EventTarget;
+
 /**
  * An implementation of the `EventTarget` interface.
  * @see https://dom.spec.whatwg.org/#eventtarget
@@ -35,7 +36,7 @@ import {
 export class EventTarget<
     TEventMap extends Record<string, Event> = Record<string, Event>,
     TMode extends "standard" | "strict" = "standard"
-> {
+> implements TNativeEventTarget {
     /**
      * Initialize this instance.
      */
@@ -217,7 +218,7 @@ export class EventTarget<
     dispatchEvent(
         e:
             | EventTarget.EventData<TEventMap, TMode, string>
-            | EventTarget.FallbackEvent<TMode>,
+            | EventTarget.FallbackEvent<TMode>
     ): boolean {
         const list = $(this)[String(e.type)]
         if (list == null) {
@@ -548,8 +549,8 @@ for (let i = 0; i < keys.length; ++i) {
 
 // Ensure `eventTarget instanceof window.EventTarget` is `true`.
 if (
-    typeof Global !== "undefined" &&
-    typeof Global.EventTarget !== "undefined"
+    typeof globalThis !== "undefined" &&
+    typeof globalThis.EventTarget !== "undefined"
 ) {
-    Object.setPrototypeOf(EventTarget.prototype, Global.EventTarget.prototype)
+    Object.setPrototypeOf(EventTarget.prototype, globalThis.EventTarget.prototype)
 }

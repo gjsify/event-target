@@ -4,7 +4,7 @@ import {
     EventTarget as EventTargetShim,
     getEventAttributeValue,
     setEventAttributeValue,
-} from "../../src/index"
+} from "../src/index"
 
 let signal = new AbortController().signal
 
