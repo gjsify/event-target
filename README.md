@@ -3,7 +3,7 @@
 An implementation of WHATWG EventTarget interface for Gjs forked from [mysticatea/event-target-shim](https://github.com/mysticatea/event-target-shim).
 
 ## TODO
- * Write tests for CustomEvent
+ * Replace this with [happy-dom/event](https://github.com/capricorn86/happy-dom/tree/master/packages/happy-dom/src/event)?
 
 # Original Readme
 # event-target-shim
