@@ -2,9 +2,9 @@
     "compilerOptions": {
         "allowSyntheticDefaultImports": true,
         "declaration": true,
-        "declarationDir": "lib/types",
+        "declarationDir": "lib",
         "esModuleInterop": true,
-        "lib": [],
+        "lib": ["ESNext"],
         "module": "ESNext",
         "moduleResolution": "NodeNext",
         "newLine": "LF",

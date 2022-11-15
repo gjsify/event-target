@@ -2,9 +2,10 @@
   "name": "@gjsify/event-target",
   "version": "0.0.1",
   "description": "An implementation of WHATWG EventTarget interface for Gjs",
-  "main": "lib/cjs/index.js",
-  "module": "lib/esm/index.js",
-  "types": "lib/types/index.d.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "type": "module",
   "files": [
     "index.*",
     "es5.*",
@@ -26,7 +27,7 @@
   "devDependencies": {
     "@gjsify/cli": "workspace:^",
     "@gjsify/unit": "workspace:^",
-    "typescript": "^4.8.3"
+    "typescript": "^4.8.4"
   },
   "repository": {
     "type": "git",

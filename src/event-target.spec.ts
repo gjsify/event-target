@@ -18,7 +18,7 @@ const NativeEvent = globalThis.Event
 const NativeKeyboardEvent = globalThis.KeyboardEvent
 const NativeMouseEvent = globalThis.MouseEvent
 
-export default async () => {
+export const EventTargetTest = async () => {
     await describe("EventTarget.constructor", async () => {
 
         await it("should not throw", async () => {

@@ -2,7 +2,7 @@ import { describe, it, assert, spy, beforeEach, afterEach, on } from '@gjsify/un
 
 import { Event, EventTarget, setWarningHandler } from "./index.js"
 
-export default async () => {
+export const ErrorHandlerTest = async () => {
     await describe("The default error handler", async () => {
 
         beforeEach(async () => {

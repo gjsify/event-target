@@ -17,7 +17,7 @@ const NativeEvent = globalThis.Event;
 
 // Credits https://github.com/mysticatea/event-target-shim/blob/master/test/event.ts
 
-export default async () => {
+export const EventTest = async () => {
 
 	await describe("Event.constructor", async () => {
 

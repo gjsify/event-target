@@ -10,7 +10,7 @@ import { InvalidAttributeHandler } from "./warnings.js"
 import { countEventListeners } from "./test/count-event-listeners.js"
 import { setupErrorCheck } from "./test/setup-error-check.js"
 
-export default async () => {
+export const eventAttributeTest = async () => {
     await describe("Event attribute handlers 'getEventAttributeValue' function", async () => {
         let target: EventTarget;
         const { assertWarning, beforeEachCb, afterEachCb } = setupErrorCheck();

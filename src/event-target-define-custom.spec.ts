@@ -4,7 +4,7 @@ import { defineCustomEventTarget, Event, EventTarget } from "./index.js"
 import { countEventListeners } from "./test/count-event-listeners.js"
 import { setupErrorCheck } from "./test/setup-error-check.js"
 
-export default async () => {
+export const eventTargetDefineCustomTest = async () => {
 
     const MyEventTarget = defineCustomEventTarget<{
         foo: Event<"foo">

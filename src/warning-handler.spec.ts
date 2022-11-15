@@ -3,7 +3,7 @@ import { describe, it, assert, spy, on } from '@gjsify/unit';
 import { EventTarget } from "./index.js"
 import { InvalidEventListener } from "./warnings.js"
 
-export default async () => {
+export const warningHandlerTest = async () => {
     // Run this only on Node.js because console.warn is read-only on Gjs
     await on('Node.js', async () => {
         await describe("The default warning handler", async () => {
