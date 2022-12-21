@@ -1,10 +1,11 @@
 /// <reference lib="dom" />
+
 import {
     Event as EventShim,
     EventTarget as EventTargetShim,
     getEventAttributeValue,
     setEventAttributeValue,
-} from "../src/index"
+} from "../src/index.js"
 
 let signal = new AbortController().signal
 
