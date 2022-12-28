@@ -27,7 +27,7 @@
   "devDependencies": {
     "@gjsify/cli": "workspace:^",
     "@gjsify/unit": "workspace:^",
-    "typescript": "^5.0.0-dev.20221227"
+    "typescript": "^5.0.0-dev.20221228"
   },
   "repository": {
     "type": "git",
