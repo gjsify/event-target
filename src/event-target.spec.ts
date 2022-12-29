@@ -1,22 +1,22 @@
 import { describe, it, assert, Spy, spy, beforeEach, afterEach } from '@gjsify/unit';
 
-import { Event, EventTarget } from "./index.js"
+import { Event, EventTarget } from "./index.js";
 import {
     CanceledInPassiveListener,
     EventListenerWasDuplicated,
     InvalidEventListener,
     NonCancelableEventWasCanceled,
     OptionWasIgnored,
-} from "./warnings.js"
-import { AbortSignalStub } from "./test/abort-signal-stub.js"
-import { countEventListeners } from "./test/count-event-listeners.js"
-import { setupErrorCheck } from "./test/setup-error-check.js"
+} from "./warnings.js";
+import { AbortSignalStub } from "./test/abort-signal-stub.js";
+import { countEventListeners } from "./test/count-event-listeners.js";
+import { setupErrorCheck } from "./test/setup-error-check.js";
 
-const NativeDOMException = globalThis.DOMException
-const NativeEventTarget = globalThis.EventTarget
-const NativeEvent = globalThis.Event
-const NativeKeyboardEvent = globalThis.KeyboardEvent
-const NativeMouseEvent = globalThis.MouseEvent
+const NativeDOMException = globalThis.DOMException;
+const NativeEventTarget = globalThis.EventTarget;
+const NativeEvent = globalThis.Event;
+const NativeKeyboardEvent = globalThis.KeyboardEvent;
+const NativeMouseEvent = globalThis.MouseEvent;
 
 export const EventTargetTest = async () => {
     await describe("EventTarget.constructor", async () => {

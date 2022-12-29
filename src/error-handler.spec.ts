@@ -1,6 +1,7 @@
 import { describe, it, assert, spy, beforeEach, afterEach, on } from '@gjsify/unit';
 
 import { Event, EventTarget, setWarningHandler } from "./index.js"
+import process from 'process';
 
 export const ErrorHandlerTest = async () => {
     await describe("The default error handler", async () => {

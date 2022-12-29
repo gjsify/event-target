@@ -8,16 +8,12 @@ import {
     TruthyWasAssignedToReturnValue,
 } from "./warnings.js"
 
-/*eslint-disable class-methods-use-this */
-
-export type TNativeEvent = globalThis.Event;
-
 /**
  * An implementation of `Event` interface, that wraps a given event object.
  * `EventTarget` shim can control the internal state of this `Event` objects.
  * @see https://dom.spec.whatwg.org/#event
  */
-export class Event<TEventType extends string = string> implements TNativeEvent {
+export class Event<TEventType extends string = string> implements globalThis.Event {
     /**
      * @see https://dom.spec.whatwg.org/#dom-event-none
      */
