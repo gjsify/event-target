@@ -1,5 +1,6 @@
 import { Event } from "./event.js"
-import { EventTarget, getEventTargetInternalData } from "./event-target.js"
+import { getEventTargetInternalData } from "./event-target.js"
+import type { EventTarget } from "./event-target.js"
 import { addListener, ListenerList, removeListener } from "./listener-list.js"
 import { ensureListenerList } from "./listener-list-map.js"
 import { InvalidAttributeHandler } from "./warnings.js"

@@ -27,8 +27,6 @@ import {
     OptionWasIgnored,
 } from "./warnings.js"
 
-export type TNativeEventTarget = globalThis.EventTarget;
-
 /**
  * An implementation of the `EventTarget` interface.
  * @see https://dom.spec.whatwg.org/#eventtarget
@@ -36,7 +34,7 @@ export type TNativeEventTarget = globalThis.EventTarget;
 export class EventTarget<
     TEventMap extends Record<string, Event> = Record<string, Event>,
     TMode extends "standard" | "strict" = "standard"
-> implements TNativeEventTarget {
+> implements globalThis.EventTarget {
     /**
      * Initialize this instance.
      */
